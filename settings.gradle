@@ -1,0 +1,2 @@
+rootProject.name = "BAJPS3"
+include ':app'
