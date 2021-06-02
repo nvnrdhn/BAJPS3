@@ -6,39 +6,90 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.nvnrdhn.bajps3.R
+import com.nvnrdhn.bajps3.data.model.MovieListItem
 import com.nvnrdhn.bajps3.databinding.FragmentMoviesBinding
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MoviesFragment : Fragment() {
 
-    private lateinit var moviesViewModel: MoviesViewModel
+    private val moviesViewModel: MoviesViewModel by viewModels()
     private var _binding: FragmentMoviesBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+    private val adapter = MovieListAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        moviesViewModel =
-            ViewModelProvider(this).get(MoviesViewModel::class.java)
-
         _binding = FragmentMoviesBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
-        val textView: TextView = binding.textHome
-        moviesViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
+        binding.rvMovies.apply {
+            adapter = this@MoviesFragment.adapter
+            layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+        }
         return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        moviesViewModel.streamMovieList().observe(viewLifecycleOwner) {
+            lifecycleScope.launch {
+                adapter.submitData(it)
+            }
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+}
+
+private class MovieListAdapter :
+    PagingDataAdapter<MovieListItem, MovieListAdapter.ViewHolder>(REPO_COMPARATOR) {
+
+    companion object {
+        private val REPO_COMPARATOR = object : DiffUtil.ItemCallback<MovieListItem>() {
+            override fun areItemsTheSame(oldItem: MovieListItem, newItem: MovieListItem): Boolean =
+                oldItem.title == newItem.title
+
+            override fun areContentsTheSame(
+                oldItem: MovieListItem,
+                newItem: MovieListItem
+            ): Boolean =
+                oldItem == newItem
+        }
+    }
+
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val tvJudul = itemView.findViewById<TextView>(R.id.tvJudul)
+        private val tvDeskripsi = itemView.findViewById<TextView>(R.id.tvDesc)
+        fun bind(item: MovieListItem) {
+            tvJudul.text = item.title
+            tvDeskripsi.text = item.overview
+        }
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val item = getItem(position)
+        if (item != null) holder.bind(item)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.film_item, parent, false)
+        return ViewHolder(view)
     }
 }
