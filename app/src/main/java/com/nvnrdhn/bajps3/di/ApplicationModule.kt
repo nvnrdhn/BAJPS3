@@ -2,6 +2,7 @@ package com.nvnrdhn.bajps3.di
 
 import com.nvnrdhn.bajps3.BuildConfig
 import com.nvnrdhn.bajps3.data.TMDBApiService
+import com.nvnrdhn.bajps3.data.model.ConfigurationResponse
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,4 +32,11 @@ class ApplicationModule {
     @Provides
     @Singleton
     fun provideApiService(retrofit: Retrofit): TMDBApiService = retrofit.create(TMDBApiService::class.java)
+
+    @Provides
+    @Singleton
+    suspend fun provideTMDBConfig(apiService: TMDBApiService): ConfigurationResponse {
+        val body = apiService.getConfig(BuildConfig.API_KEY).body()
+        return body ?: ConfigurationResponse()
+    }
 }

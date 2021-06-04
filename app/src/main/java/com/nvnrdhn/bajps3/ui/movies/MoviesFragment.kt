@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -12,7 +13,9 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.nvnrdhn.bajps3.R
+import com.nvnrdhn.bajps3.data.model.ConfigurationResponse
 import com.nvnrdhn.bajps3.data.model.MovieListItem
 import com.nvnrdhn.bajps3.databinding.FragmentMoviesBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,6 +48,9 @@ class MoviesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        lifecycleScope.launch {
+            adapter.config = moviesViewModel.fetchConfig()
+        }
         moviesViewModel.streamMovieList().observe(viewLifecycleOwner) {
             lifecycleScope.launch {
                 adapter.submitData(it)
@@ -74,12 +80,22 @@ private class MovieListAdapter :
         }
     }
 
+    var config: ConfigurationResponse? = null
+
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tvJudul = itemView.findViewById<TextView>(R.id.tvJudul)
         private val tvDeskripsi = itemView.findViewById<TextView>(R.id.tvDesc)
+        private val tvTanggal = itemView.findViewById<TextView>(R.id.tvTanggal)
+        private val ivCover = itemView.findViewById<ImageView>(R.id.ivCover)
         fun bind(item: MovieListItem) {
             tvJudul.text = item.title
             tvDeskripsi.text = item.overview
+            tvTanggal.text = item.releaseDate
+            if (config != null) {
+                Glide.with(itemView)
+                    .load("${config!!.images.secureBaseUrl}${config!!.images.posterSizes[4]}${item.posterPath}")
+                    .into(ivCover)
+            }
         }
     }
 

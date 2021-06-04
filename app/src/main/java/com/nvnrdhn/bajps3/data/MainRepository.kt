@@ -3,6 +3,7 @@ package com.nvnrdhn.bajps3.data
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.liveData
+import com.nvnrdhn.bajps3.BuildConfig
 import javax.inject.Inject
 
 class MainRepository @Inject constructor(private val apiService: TMDBApiService) {
@@ -18,4 +19,6 @@ class MainRepository @Inject constructor(private val apiService: TMDBApiService)
         ),
         pagingSourceFactory = { MoviePagingSource(apiService) }
     ).liveData
+
+    suspend fun fetchConfig() = apiService.getConfig(BuildConfig.API_KEY).body()
 }
