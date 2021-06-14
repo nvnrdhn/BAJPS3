@@ -1,7 +1,6 @@
 package com.nvnrdhn.bajps3.ui.movies
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -10,7 +9,6 @@ import com.nvnrdhn.bajps3.data.MainRepository
 import com.nvnrdhn.bajps3.data.model.ConfigurationResponse
 import com.nvnrdhn.bajps3.data.model.MovieListItem
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel

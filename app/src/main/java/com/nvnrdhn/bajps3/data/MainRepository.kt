@@ -20,5 +20,13 @@ class MainRepository @Inject constructor(private val apiService: TMDBApiService)
         pagingSourceFactory = { MoviePagingSource(apiService) }
     ).liveData
 
+    fun fetchTvList() = Pager(
+        config = PagingConfig(
+            pageSize = NETWORK_PAGE_SIZE,
+            enablePlaceholders = false
+        ),
+        pagingSourceFactory = { TvPagingSource(apiService) }
+    ).liveData
+
     suspend fun fetchConfig() = apiService.getConfig(BuildConfig.API_KEY).body()
 }

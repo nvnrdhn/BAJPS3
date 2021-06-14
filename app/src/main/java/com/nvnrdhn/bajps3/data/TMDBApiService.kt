@@ -2,6 +2,7 @@ package com.nvnrdhn.bajps3.data
 
 import com.nvnrdhn.bajps3.data.model.ConfigurationResponse
 import com.nvnrdhn.bajps3.data.model.MovieListResponse
+import com.nvnrdhn.bajps3.data.model.TvListResponse
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.GET
@@ -14,6 +15,12 @@ interface TMDBApiService {
         @Query("api_key") apiKey: String,
         @Query("page") page: Int
     ) : Response<MovieListResponse>
+
+    @GET("tv/popular")
+    suspend fun getTvList(
+        @Query("api_key") apiKey: String,
+        @Query("page") page: Int
+    ) : Response<TvListResponse>
 
     @GET("configuration")
     suspend fun getConfig(

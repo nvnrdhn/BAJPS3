@@ -1,6 +1,7 @@
 package com.nvnrdhn.bajps3.di
 
 import com.nvnrdhn.bajps3.BuildConfig
+import com.nvnrdhn.bajps3.data.MainRepository
 import com.nvnrdhn.bajps3.data.TMDBApiService
 import com.nvnrdhn.bajps3.data.model.ConfigurationResponse
 import dagger.Module
@@ -35,8 +36,5 @@ class ApplicationModule {
 
     @Provides
     @Singleton
-    suspend fun provideTMDBConfig(apiService: TMDBApiService): ConfigurationResponse {
-        val body = apiService.getConfig(BuildConfig.API_KEY).body()
-        return body ?: ConfigurationResponse()
-    }
+    fun provideRepository(apiService: TMDBApiService) = MainRepository(apiService)
 }
