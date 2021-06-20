@@ -9,17 +9,43 @@
         android:id="@+id/navigation_movies"
         android:name="com.nvnrdhn.bajps3.ui.movies.MoviesFragment"
         android:label="@string/title_movies"
-        tools:layout="@layout/fragment_movies" />
+        tools:layout="@layout/fragment_movies" >
+        <action
+            android:id="@+id/action_movies_to_details"
+            app:destination="@id/navigation_details" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_tvshows"
         android:name="com.nvnrdhn.bajps3.ui.tvshows.TvShowsFragment"
         android:label="@string/title_tvshows"
-        tools:layout="@layout/fragment_tvshows" />
+        tools:layout="@layout/fragment_tvshows" >
+        <action
+            android:id="@+id/action_tv_to_details"
+            app:destination="@id/navigation_details" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_favorite"
         android:name="com.nvnrdhn.bajps3.ui.favorite.FavoriteFragment"
         android:label="@string/title_favorite"
-        tools:layout="@layout/fragment_favorite" />
+        tools:layout="@layout/fragment_favorite" >
+        <action
+            android:id="@+id/action_favorite_to_details"
+            app:destination="@id/navigation_details" />
+    </fragment>
+    <activity
+        android:id="@+id/navigation_details"
+        android:name="com.nvnrdhn.bajps3.ui.details.DetailsActivity"
+        android:label="@string/title_details"
+        tools:layout="@layout/activity_details" >
+        <argument
+            android:name="type"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="id"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </activity>
 </navigation>

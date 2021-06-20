@@ -4,31 +4,25 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.paging.PagingDataAdapter
-import androidx.recyclerview.widget.DiffUtil
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.nvnrdhn.bajps3.R
-import com.nvnrdhn.bajps3.data.model.ConfigurationResponse
-import com.nvnrdhn.bajps3.data.model.TvListItem
 import com.nvnrdhn.bajps3.databinding.FragmentTvshowsBinding
+import com.nvnrdhn.bajps3.ui.details.DetailsActivity
+import com.nvnrdhn.bajps3.util.OnFilmClickListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class TvShowsFragment : Fragment() {
+class TvShowsFragment : Fragment(), OnFilmClickListener {
 
     private val tvShowsViewModel: TvShowsViewModel by viewModels()
     private var _binding: FragmentTvshowsBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
     private val adapter = TvListAdapter()
 
@@ -40,7 +34,9 @@ class TvShowsFragment : Fragment() {
         _binding = FragmentTvshowsBinding.inflate(inflater, container, false)
         val root: View = binding.root
         binding.rvTvshows.apply {
-            adapter = this@TvShowsFragment.adapter
+            adapter = this@TvShowsFragment.adapter.apply {
+                onFilmClickListener = this@TvShowsFragment
+            }
             layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         }
         return root
@@ -62,50 +58,12 @@ class TvShowsFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-}
 
-private class TvListAdapter :
-    PagingDataAdapter<TvListItem, TvListAdapter.ViewHolder>(REPO_COMPARATOR) {
-
-    companion object {
-        private val REPO_COMPARATOR = object : DiffUtil.ItemCallback<TvListItem>() {
-            override fun areItemsTheSame(oldItem: TvListItem, newItem: TvListItem): Boolean =
-                oldItem.name == newItem.name
-
-            override fun areContentsTheSame(
-                oldItem: TvListItem,
-                newItem: TvListItem
-            ): Boolean =
-                oldItem == newItem
-        }
-    }
-
-    var config: ConfigurationResponse? = null
-
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val tvJudul = itemView.findViewById<TextView>(R.id.tvJudul)
-        private val tvDeskripsi = itemView.findViewById<TextView>(R.id.tvDesc)
-        private val tvTanggal = itemView.findViewById<TextView>(R.id.tvTanggal)
-        private val ivCover = itemView.findViewById<ImageView>(R.id.ivCover)
-        fun bind(item: TvListItem) {
-            tvJudul.text = item.name
-            tvDeskripsi.text = item.overview
-            tvTanggal.text = item.firstAirDate
-            if (config != null) {
-                Glide.with(itemView)
-                    .load("${config!!.images.secureBaseUrl}${config!!.images.posterSizes[4]}${item.posterPath}")
-                    .into(ivCover)
-            }
-        }
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = getItem(position)
-        if (item != null) holder.bind(item)
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.film_item, parent, false)
-        return ViewHolder(view)
+    override fun onFilmClick(id: Int) {
+        val bundle = bundleOf(
+            "id" to id,
+            "type" to DetailsActivity.TYPE_TV
+        )
+        findNavController().navigate(R.id.action_tv_to_details, bundle)
     }
 }
