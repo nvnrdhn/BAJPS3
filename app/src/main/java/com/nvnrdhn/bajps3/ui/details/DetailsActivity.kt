@@ -1,6 +1,7 @@
 package com.nvnrdhn.bajps3.ui.details
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -10,6 +11,7 @@ import com.nvnrdhn.bajps3.databinding.ActivityDetailsBinding
 class DetailsActivity : AppCompatActivity() {
 
     companion object {
+        const val TAG = "DetailsActivity"
         const val TYPE_MOVIE = 1
         const val TYPE_TV = 2
     }
@@ -25,6 +27,8 @@ class DetailsActivity : AppCompatActivity() {
             setDisplayShowHomeEnabled(true)
             setDisplayHomeAsUpEnabled(true)
         }
+        // TODO: handle args from navigation
+        Log.d(TAG, (intent.extras?.get("type") as Int).toString())
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
