@@ -30,7 +30,7 @@ class MainRepository @Inject constructor(private val apiService: TMDBApiService)
 
     suspend fun fetchConfig() = apiService.getConfig(BuildConfig.API_KEY).body()
 
-    suspend fun fetchMovieDetails(id: Int) = apiService.getMovieDetails(BuildConfig.API_KEY, id).body()
+    suspend fun fetchMovieDetails(id: Int) = apiService.getMovieDetails(id, BuildConfig.API_KEY).body()
 
-    suspend fun fetchTvDetails(id: Int) = apiService.getTvDetails(BuildConfig.API_KEY, id).body()
+    suspend fun fetchTvDetails(id: Int) = apiService.getTvDetails(id, BuildConfig.API_KEY).body()
 }

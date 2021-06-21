@@ -17,8 +17,8 @@ interface TMDBApiService {
 
     @GET("movie/{id}")
     suspend fun getMovieDetails(
-        @Query("api_key") apiKey: String,
-        @Path("id") id: Int
+        @Path("id") id: Int,
+        @Query("api_key") apiKey: String
     ) : Response<MovieDetailResponse>
 
     @GET("tv/popular")
@@ -29,8 +29,8 @@ interface TMDBApiService {
 
     @GET("tv/{id}")
     suspend fun getTvDetails(
-        @Query("api_key") apiKey: String,
-        @Path("id") id: Int
+        @Path("id") id: Int,
+        @Query("api_key") apiKey: String
     ) : Response<TvDetailResponse>
 
     @GET("configuration")

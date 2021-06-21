@@ -70,34 +70,14 @@
                 tools:text="Sci-Fi &amp; Fantasy, Action &amp; Adventure, Western" />
 
             <TextView
-                android:id="@+id/textView4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/text_rating"
-                android:textColor="?android:attr/textColorSecondary"
-                app:layout_constraintStart_toStartOf="@+id/tvGenre"
-                app:layout_constraintTop_toBottomOf="@+id/tvGenre" />
-
-            <TextView
-                android:id="@+id/tvRating"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:textColor="?android:attr/textColorSecondary"
-                app:layout_constraintStart_toEndOf="@+id/textView4"
-                app:layout_constraintTop_toTopOf="@+id/textView4"
-                tools:text="TV-14" />
-
-            <TextView
                 android:id="@+id/textView6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/text_duration"
                 android:textColor="?android:attr/textColorSecondary"
-                app:layout_constraintStart_toStartOf="@+id/textView4"
-                app:layout_constraintTop_toBottomOf="@+id/textView4" />
+                app:layout_constraintStart_toStartOf="@+id/tvGenre"
+                app:layout_constraintTop_toBottomOf="@+id/tvGenre" />
 
             <TextView
                 android:id="@+id/tvDuration"
@@ -169,7 +149,7 @@
                 app:layout_constraintEnd_toEndOf="@+id/pbScore"
                 app:layout_constraintStart_toStartOf="@+id/pbScore"
                 app:layout_constraintTop_toTopOf="@+id/pbScore"
-                tools:text="85" />
+                tools:text="8.5" />
 
             <TextView
                 android:id="@+id/tvTagline"
