@@ -4,10 +4,14 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.nvnrdhn.bajps3.R
+import com.nvnrdhn.bajps3.data.model.MovieDetailResponse
 import com.nvnrdhn.bajps3.databinding.ActivityDetailsBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class DetailsActivity : AppCompatActivity() {
 
     companion object {
@@ -16,7 +20,8 @@ class DetailsActivity : AppCompatActivity() {
         const val TYPE_TV = 2
     }
 
-    var binding: ActivityDetailsBinding? = null
+    private var binding: ActivityDetailsBinding? = null
+    private val viewModel: DetailsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +34,10 @@ class DetailsActivity : AppCompatActivity() {
         }
         // TODO: handle args from navigation
         Log.d(TAG, (intent.extras?.get("type") as Int).toString())
+    }
+
+    private fun initView(details: Any?) {
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

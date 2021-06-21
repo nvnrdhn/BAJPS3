@@ -29,4 +29,8 @@ class MainRepository @Inject constructor(private val apiService: TMDBApiService)
     ).liveData
 
     suspend fun fetchConfig() = apiService.getConfig(BuildConfig.API_KEY).body()
+
+    suspend fun fetchMovieDetails(id: Int) = apiService.getMovieDetails(BuildConfig.API_KEY, id).body()
+
+    suspend fun fetchTvDetails(id: Int) = apiService.getTvDetails(BuildConfig.API_KEY, id).body()
 }
