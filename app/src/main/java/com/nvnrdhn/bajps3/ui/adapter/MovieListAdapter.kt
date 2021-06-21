@@ -1,4 +1,4 @@
-package com.nvnrdhn.bajps3.ui.tvshows
+package com.nvnrdhn.bajps3.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -11,20 +11,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.nvnrdhn.bajps3.R
 import com.nvnrdhn.bajps3.data.model.ConfigurationResponse
-import com.nvnrdhn.bajps3.data.model.TvListItem
+import com.nvnrdhn.bajps3.data.model.MovieListItem
 import com.nvnrdhn.bajps3.util.OnFilmClickListener
 
-class TvListAdapter :
-    PagingDataAdapter<TvListItem, TvListAdapter.ViewHolder>(REPO_COMPARATOR) {
+class MovieListAdapter :
+    PagingDataAdapter<MovieListItem, MovieListAdapter.ViewHolder>(REPO_COMPARATOR) {
 
     companion object {
-        private val REPO_COMPARATOR = object : DiffUtil.ItemCallback<TvListItem>() {
-            override fun areItemsTheSame(oldItem: TvListItem, newItem: TvListItem): Boolean =
-                oldItem.name == newItem.name
+        private val REPO_COMPARATOR = object : DiffUtil.ItemCallback<MovieListItem>() {
+            override fun areItemsTheSame(oldItem: MovieListItem, newItem: MovieListItem): Boolean =
+                oldItem.title == newItem.title
 
             override fun areContentsTheSame(
-                oldItem: TvListItem,
-                newItem: TvListItem
+                oldItem: MovieListItem,
+                newItem: MovieListItem
             ): Boolean =
                 oldItem == newItem
         }
@@ -38,10 +38,10 @@ class TvListAdapter :
         private val tvDeskripsi = itemView.findViewById<TextView>(R.id.tvDesc)
         private val tvTanggal = itemView.findViewById<TextView>(R.id.tvTanggal)
         private val ivCover = itemView.findViewById<ImageView>(R.id.ivCover)
-        fun bind(item: TvListItem) {
-            tvJudul.text = item.name
+        fun bind(item: MovieListItem) {
+            tvJudul.text = item.title
             tvDeskripsi.text = item.overview
-            tvTanggal.text = item.firstAirDate
+            tvTanggal.text = item.releaseDate
             if (config != null) {
                 Glide.with(itemView)
                     .load("${config!!.images.secureBaseUrl}${config!!.images.posterSizes[4]}${item.posterPath}")

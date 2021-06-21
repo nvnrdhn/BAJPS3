@@ -18,7 +18,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class DetailsActivity : AppCompatActivity() {
 
     companion object {
-        const val TAG = "DetailsActivity"
         const val TYPE_MOVIE = 1
         const val TYPE_TV = 2
     }

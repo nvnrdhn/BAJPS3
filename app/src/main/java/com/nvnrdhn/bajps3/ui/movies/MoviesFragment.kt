@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nvnrdhn.bajps3.R
 import com.nvnrdhn.bajps3.databinding.FragmentMoviesBinding
+import com.nvnrdhn.bajps3.ui.adapter.FilmLoadStateAdapter
+import com.nvnrdhn.bajps3.ui.adapter.MovieListAdapter
 import com.nvnrdhn.bajps3.ui.details.DetailsActivity
 import com.nvnrdhn.bajps3.util.OnFilmClickListener
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,7 +38,7 @@ class MoviesFragment : Fragment(), OnFilmClickListener {
         binding.rvMovies.apply {
             adapter = this@MoviesFragment.adapter.apply {
                 onFilmClickListener = this@MoviesFragment
-            }
+            }.withLoadStateFooter(FilmLoadStateAdapter { this@MoviesFragment.adapter.retry() })
             layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         }
         return root

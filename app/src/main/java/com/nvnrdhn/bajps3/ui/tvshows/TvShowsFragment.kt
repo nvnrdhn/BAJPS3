@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nvnrdhn.bajps3.R
 import com.nvnrdhn.bajps3.databinding.FragmentTvshowsBinding
+import com.nvnrdhn.bajps3.ui.adapter.FilmLoadStateAdapter
+import com.nvnrdhn.bajps3.ui.adapter.TvListAdapter
 import com.nvnrdhn.bajps3.ui.details.DetailsActivity
 import com.nvnrdhn.bajps3.util.OnFilmClickListener
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,7 +38,7 @@ class TvShowsFragment : Fragment(), OnFilmClickListener {
         binding.rvTvshows.apply {
             adapter = this@TvShowsFragment.adapter.apply {
                 onFilmClickListener = this@TvShowsFragment
-            }
+            }.withLoadStateFooter(FilmLoadStateAdapter { this@TvShowsFragment.adapter.retry() })
             layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         }
         return root

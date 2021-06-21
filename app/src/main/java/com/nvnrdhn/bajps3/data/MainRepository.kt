@@ -4,6 +4,8 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.liveData
 import com.nvnrdhn.bajps3.BuildConfig
+import com.nvnrdhn.bajps3.data.model.ConfigurationResponse
+import java.lang.Exception
 import javax.inject.Inject
 
 class MainRepository @Inject constructor(private val apiService: TMDBApiService) {
@@ -28,7 +30,14 @@ class MainRepository @Inject constructor(private val apiService: TMDBApiService)
         pagingSourceFactory = { TvPagingSource(apiService) }
     ).liveData
 
-    suspend fun fetchConfig() = apiService.getConfig(BuildConfig.API_KEY).body()
+    suspend fun fetchConfig(): ConfigurationResponse? {
+        return try {
+            apiService.getConfig(BuildConfig.API_KEY).body()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
 
     suspend fun fetchMovieDetails(id: Int) = apiService.getMovieDetails(id, BuildConfig.API_KEY).body()
 
