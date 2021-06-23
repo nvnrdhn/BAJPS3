@@ -5,14 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nvnrdhn.bajps3.R
-import com.nvnrdhn.bajps3.databinding.FragmentTvshowsBinding
+import com.nvnrdhn.bajps3.databinding.FragmentTmdbListBinding
 import com.nvnrdhn.bajps3.ui.adapter.FilmLoadStateAdapter
 import com.nvnrdhn.bajps3.ui.adapter.TvListAdapter
 import com.nvnrdhn.bajps3.ui.details.DetailsActivity
@@ -24,7 +26,7 @@ import kotlinx.coroutines.launch
 class TvShowsFragment : Fragment(), OnFilmClickListener {
 
     private val tvShowsViewModel: TvShowsViewModel by viewModels()
-    private var _binding: FragmentTvshowsBinding? = null
+    private var _binding: FragmentTmdbListBinding? = null
     private val binding get() = _binding!!
     private val adapter = TvListAdapter()
 
@@ -33,14 +35,20 @@ class TvShowsFragment : Fragment(), OnFilmClickListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentTvshowsBinding.inflate(inflater, container, false)
+        _binding = FragmentTmdbListBinding.inflate(inflater, container, false)
         val root: View = binding.root
-        binding.rvTvshows.apply {
+        binding.rvList.apply {
             adapter = this@TvShowsFragment.adapter.apply {
                 onFilmClickListener = this@TvShowsFragment
+                addLoadStateListener { loadState ->
+                    binding.rvList.isVisible = loadState.source.refresh is LoadState.NotLoading
+                    binding.pbLoading.isVisible = loadState.source.refresh is LoadState.Loading
+                    binding.btRetry.isVisible = loadState.source.refresh is LoadState.Error
+                }
             }.withLoadStateFooter(FilmLoadStateAdapter { this@TvShowsFragment.adapter.retry() })
             layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         }
+        binding.btRetry.setOnClickListener { adapter.retry() }
         return root
     }
 

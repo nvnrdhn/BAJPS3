@@ -12,4 +12,5 @@
     <string name="deskripsi_gambar">Poster Film</string>
     <string name="text_watch_trailer">Watch Trailer</string>
     <string name="retry">Retry</string>
+    <string name="text_empty_favorite">Belum ada favorit.</string>
 </resources>

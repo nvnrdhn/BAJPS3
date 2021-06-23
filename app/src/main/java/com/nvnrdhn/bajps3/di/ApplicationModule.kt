@@ -1,12 +1,16 @@
 package com.nvnrdhn.bajps3.di
 
+import android.content.Context
+import androidx.room.Room
 import com.nvnrdhn.bajps3.BuildConfig
 import com.nvnrdhn.bajps3.data.MainRepository
 import com.nvnrdhn.bajps3.data.TMDBApiService
-import com.nvnrdhn.bajps3.data.model.ConfigurationResponse
+import com.nvnrdhn.bajps3.room.AppDatabase
+import com.nvnrdhn.bajps3.room.FavoriteDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -36,5 +40,15 @@ class ApplicationModule {
 
     @Provides
     @Singleton
-    fun provideRepository(apiService: TMDBApiService) = MainRepository(apiService)
+    fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
+        Room.databaseBuilder(context, AppDatabase::class.java, "favorite-database")
+//            .fallbackToDestructiveMigration()
+            .build()
+
+    @Provides
+    fun provideFavoriteDao(appDatabase: AppDatabase): FavoriteDao = appDatabase.favoriteDao()
+
+    @Provides
+    @Singleton
+    fun provideRepository(apiService: TMDBApiService, favoriteDao: FavoriteDao): MainRepository = MainRepository(apiService, favoriteDao)
 }

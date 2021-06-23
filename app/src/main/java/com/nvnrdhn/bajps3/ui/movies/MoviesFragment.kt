@@ -5,14 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nvnrdhn.bajps3.R
-import com.nvnrdhn.bajps3.databinding.FragmentMoviesBinding
+import com.nvnrdhn.bajps3.databinding.FragmentTmdbListBinding
 import com.nvnrdhn.bajps3.ui.adapter.FilmLoadStateAdapter
 import com.nvnrdhn.bajps3.ui.adapter.MovieListAdapter
 import com.nvnrdhn.bajps3.ui.details.DetailsActivity
@@ -24,7 +26,7 @@ import kotlinx.coroutines.launch
 class MoviesFragment : Fragment(), OnFilmClickListener {
 
     private val moviesViewModel: MoviesViewModel by viewModels()
-    private var _binding: FragmentMoviesBinding? = null
+    private var _binding: FragmentTmdbListBinding? = null
     private val binding get() = _binding!!
     private val adapter = MovieListAdapter()
 
@@ -33,15 +35,20 @@ class MoviesFragment : Fragment(), OnFilmClickListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentMoviesBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-        binding.rvMovies.apply {
+        _binding = FragmentTmdbListBinding.inflate(inflater, container, false)
+        binding.rvList.apply {
             adapter = this@MoviesFragment.adapter.apply {
                 onFilmClickListener = this@MoviesFragment
+                addLoadStateListener { loadState ->
+                    binding.rvList.isVisible = loadState.source.refresh is LoadState.NotLoading
+                    binding.pbLoading.isVisible = loadState.source.refresh is LoadState.Loading
+                    binding.btRetry.isVisible = loadState.source.refresh is LoadState.Error
+                }
             }.withLoadStateFooter(FilmLoadStateAdapter { this@MoviesFragment.adapter.retry() })
             layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         }
-        return root
+        binding.btRetry.setOnClickListener { adapter.retry() }
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

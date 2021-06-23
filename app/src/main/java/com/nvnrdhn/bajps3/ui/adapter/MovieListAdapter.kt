@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.nvnrdhn.bajps3.R
 import com.nvnrdhn.bajps3.data.model.ConfigurationResponse
 import com.nvnrdhn.bajps3.data.model.MovieListItem
+import com.nvnrdhn.bajps3.databinding.FilmItemBinding
 import com.nvnrdhn.bajps3.util.OnFilmClickListener
 
 class MovieListAdapter :
@@ -33,21 +34,17 @@ class MovieListAdapter :
     var config: ConfigurationResponse? = null
     var onFilmClickListener: OnFilmClickListener? = null
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val tvJudul = itemView.findViewById<TextView>(R.id.tvJudul)
-        private val tvDeskripsi = itemView.findViewById<TextView>(R.id.tvDesc)
-        private val tvTanggal = itemView.findViewById<TextView>(R.id.tvTanggal)
-        private val ivCover = itemView.findViewById<ImageView>(R.id.ivCover)
+    inner class ViewHolder(private val binding: FilmItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: MovieListItem) {
-            tvJudul.text = item.title
-            tvDeskripsi.text = item.overview
-            tvTanggal.text = item.releaseDate
+            binding.tvJudul.text = item.title
+            binding.tvDesc.text = item.overview
+            binding.tvTanggal.text = item.releaseDate
             if (config != null) {
                 Glide.with(itemView)
                     .load("${config!!.images.secureBaseUrl}${config!!.images.posterSizes[4]}${item.posterPath}")
-                    .into(ivCover)
+                    .into(binding.ivCover)
             }
-            itemView.setOnClickListener { onFilmClickListener?.onFilmClick(item.id) }
+            binding.root.setOnClickListener { onFilmClickListener?.onFilmClick(item.id) }
         }
     }
 
@@ -58,6 +55,7 @@ class MovieListAdapter :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.film_item, parent, false)
-        return ViewHolder(view)
+        val binding = FilmItemBinding.bind(view)
+        return ViewHolder(binding)
     }
 }
