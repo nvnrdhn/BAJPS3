@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -25,7 +26,7 @@ class DetailsActivityTest {
 
     private val intent = Intent(ApplicationProvider.getApplicationContext(), DetailsActivity::class.java)
         .putExtra("id", 550)
-        .putExtra("type", 1)
+        .putExtra("type", DetailsActivity.TYPE_MOVIE)
 
     @get:Rule
     var rule = ActivityScenarioRule<DetailsActivity>(intent)
@@ -37,7 +38,7 @@ class DetailsActivityTest {
     }
 
     @Test
-    fun checkDetails() {
+    fun checkDetails_performFavorite() {
         onView(withId(R.id.tvJudul)).check(matches(not(withText(""))))
         onView(withId(R.id.tvTanggal)).check(matches(not(withText(""))))
         onView(withId(R.id.tvGenre)).check(matches(not(withText(""))))
@@ -47,6 +48,7 @@ class DetailsActivityTest {
         onView(withId(R.id.tvScore)).check(matches(not(withText(""))))
         onView(withId(R.id.tvLanguage)).check(matches(not(withText(""))))
         onView(withId(R.id.tvTagline)).check(matches(not(withText(""))))
+        onView(withId(R.id.action_favorite)).perform(click())
     }
 
     @After

@@ -61,7 +61,7 @@ dependencies {
 
     // Dependency Injection
     implementation "com.google.dagger:hilt-android:$hilt_version"
-    annotationProcessor "com.google.dagger:hilt-android-compiler:$hilt_version"
+    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
 
     // Networking
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
@@ -78,7 +78,7 @@ dependencies {
 
     // Room
     implementation "androidx.room:room-runtime:2.3.0"
-    annotationProcessor "androidx.room:room-compiler:2.3.0"
+    kapt "androidx.room:room-compiler:2.3.0"
     implementation 'androidx.room:room-ktx:2.3.0'
 
     // Testing
@@ -95,9 +95,10 @@ dependencies {
 //    testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
     debugImplementation 'androidx.fragment:fragment-testing:1.3.5'
     androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
-    androidTestAnnotationProcessor "com.google.dagger:hilt-android-compiler:$hilt_version"
+    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hilt_version"
     // required if you want to use Mockito for unit tests
     testImplementation 'org.mockito:mockito-core:2.24.5'
     // required if you want to use Mockito for Android tests
     androidTestImplementation 'org.mockito:mockito-android:2.24.5'
+    androidTestImplementation "androidx.navigation:navigation-testing:2.3.5"
 }
