@@ -14,7 +14,7 @@ import com.nvnrdhn.bajps3.room.FavoriteDao
 import java.lang.Exception
 import javax.inject.Inject
 
-class MainRepository @Inject constructor(
+open class MainRepository @Inject constructor(
     private val apiService: TMDBApiService,
     private val favoriteDao: FavoriteDao) {
 

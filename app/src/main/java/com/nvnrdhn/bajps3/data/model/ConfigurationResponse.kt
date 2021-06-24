@@ -2,7 +2,7 @@ package com.nvnrdhn.bajps3.data.model
 
 import com.google.gson.annotations.SerializedName
 
-data class ConfigurationResponse(
+open class ConfigurationResponse(
 
 	@field:SerializedName("images")
 	val images: Images = Images(),
