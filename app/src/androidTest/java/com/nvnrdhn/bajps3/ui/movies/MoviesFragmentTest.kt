@@ -12,12 +12,10 @@ import androidx.test.espresso.matcher.ViewMatchers
 import com.nvnrdhn.bajps3.R
 import com.nvnrdhn.bajps3.launchFragmentInHiltContainer
 import com.nvnrdhn.bajps3.ui.adapter.TvListAdapter
-import com.nvnrdhn.bajps3.ui.tvshows.TvShowsFragment
 import com.nvnrdhn.bajps3.util.EspressoIdlingResource
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Before
-
-import org.junit.Assert.*
 import org.junit.Test
 
 class MoviesFragmentTest {

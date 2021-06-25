@@ -14,7 +14,6 @@ import androidx.test.espresso.matcher.ViewMatchers
 import com.nvnrdhn.bajps3.R
 import com.nvnrdhn.bajps3.launchFragmentInHiltContainer
 import com.nvnrdhn.bajps3.ui.adapter.FavoriteListAdapter
-import com.nvnrdhn.bajps3.ui.adapter.TvListAdapter
 import com.nvnrdhn.bajps3.ui.details.DetailsActivity
 import com.nvnrdhn.bajps3.util.EspressoIdlingResource
 import org.junit.After

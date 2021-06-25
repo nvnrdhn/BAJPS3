@@ -9,7 +9,7 @@ import com.nvnrdhn.bajps3.databinding.FilmItemBinding
 import com.nvnrdhn.bajps3.room.Favorite
 import com.nvnrdhn.bajps3.util.OnFilmClickListener
 
-class FavoriteListAdapter() : RecyclerView.Adapter<FavoriteListAdapter.FavoriteListViewHolder>() {
+class FavoriteListAdapter : RecyclerView.Adapter<FavoriteListAdapter.FavoriteListViewHolder>() {
 
     var onFilmClickListener: OnFilmClickListener? = null
     private val list = arrayListOf<Favorite>()

@@ -1,7 +1,6 @@
 package com.nvnrdhn.bajps3.data
 
 import com.nvnrdhn.bajps3.data.model.*
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path

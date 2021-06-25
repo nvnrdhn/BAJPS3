@@ -42,7 +42,6 @@ class ApplicationModule {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
         Room.databaseBuilder(context, AppDatabase::class.java, "favorite-database")
-//            .fallbackToDestructiveMigration()
             .build()
 
     @Provides

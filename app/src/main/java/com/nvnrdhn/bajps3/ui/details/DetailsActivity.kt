@@ -29,7 +29,6 @@ class DetailsActivity : AppCompatActivity() {
     private val binding get() = _binding!!
     private val viewModel: DetailsViewModel by viewModels()
     private var isFavorite: Favorite? = null
-    private var data: Any? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
