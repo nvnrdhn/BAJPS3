@@ -2,7 +2,7 @@ package com.nvnrdhn.bajps3.data.model
 
 import com.google.gson.annotations.SerializedName
 
-data class TvDetailResponse(
+open class TvDetailResponse(
 
 	@field:SerializedName("original_language")
 	val originalLanguage: String,

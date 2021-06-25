@@ -1,15 +1,14 @@
-package com.nvnrdhn.bajps3.ui.movies
+package com.nvnrdhn.bajps3.ui.tvshows
 
-import androidx.paging.PagingSource.LoadParams.Refresh
-import androidx.paging.PagingSource.LoadResult.Page
+import androidx.paging.PagingSource
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.nvnrdhn.bajps3.BuildConfig
 import com.nvnrdhn.bajps3.data.MainRepository
-import com.nvnrdhn.bajps3.data.MoviePagingSource
 import com.nvnrdhn.bajps3.data.TMDBApiService
+import com.nvnrdhn.bajps3.data.TvPagingSource
 import com.nvnrdhn.bajps3.data.model.ConfigurationResponse
-import com.nvnrdhn.bajps3.data.model.MovieListResponse
+import com.nvnrdhn.bajps3.data.model.TvListResponse
 import com.nvnrdhn.bajps3.room.FavoriteDao
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -27,14 +26,14 @@ import org.mockito.junit.MockitoJUnitRunner
 import retrofit2.Response
 
 @RunWith(MockitoJUnitRunner::class)
-class MoviesViewModelTest {
+class TvShowsViewModelTest {
 
     @get:Rule
     var rule = MockitoJUnit.rule()
 
-    private lateinit var viewModel: MoviesViewModel
+    private lateinit var viewModel: TvShowsViewModel
     private lateinit var mainRepository: MainRepository
-    private lateinit var pagingSource: MoviePagingSource
+    private lateinit var pagingSource: TvPagingSource
 
     @Mock
     private lateinit var apiService: TMDBApiService
@@ -45,9 +44,9 @@ class MoviesViewModelTest {
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this)
-        pagingSource = MoviePagingSource(apiService)
+        pagingSource = TvPagingSource(apiService)
         mainRepository = MainRepository(apiService, favoriteDao)
-        viewModel = MoviesViewModel(mainRepository)
+        viewModel = TvShowsViewModel(mainRepository)
     }
 
     @After
@@ -56,24 +55,25 @@ class MoviesViewModelTest {
     }
 
     @Test
-    fun streamMovieList() {
+    fun streamTvList() {
         runBlocking {
-            whenever(apiService.getMovieList(BuildConfig.API_KEY, 1)).thenReturn(dummyMovieListResponse())
+            whenever(apiService.getTvList(BuildConfig.API_KEY, 1)).thenReturn(dummyTvListResponse())
             val res = pagingSource.load(
-                Refresh(
+                PagingSource.LoadParams.Refresh(
                     key = null,
                     loadSize = MainRepository.NETWORK_PAGE_SIZE,
-                    placeholdersEnabled = false)
+                    placeholdersEnabled = false
+                )
             )
             assertEquals(
-                Page(
-                    data = dummyMovieListResponse().body()!!.results,
+                PagingSource.LoadResult.Page(
+                    data = dummyTvListResponse().body()!!.results,
                     prevKey = null,
                     nextKey = null
                 ),
                 res
             )
-            verify(apiService).getMovieList(BuildConfig.API_KEY, 1)
+            verify(apiService).getTvList(BuildConfig.API_KEY, 1)
         }
     }
 
@@ -88,8 +88,8 @@ class MoviesViewModelTest {
     }
 
     private fun dummyConfigResponse() = Response.success(ConfigurationResponse())
-    private fun dummyMovieListResponse() = Response.success(
-        MovieListResponse(
+    private fun dummyTvListResponse() = Response.success(
+        TvListResponse(
             1,
             1,
             listOf(),

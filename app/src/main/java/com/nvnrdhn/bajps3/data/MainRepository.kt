@@ -8,13 +8,11 @@ import com.nvnrdhn.bajps3.BuildConfig
 import com.nvnrdhn.bajps3.data.model.ConfigurationResponse
 import com.nvnrdhn.bajps3.data.model.MovieDetailResponse
 import com.nvnrdhn.bajps3.data.model.TvDetailResponse
-import com.nvnrdhn.bajps3.room.AppDatabase
 import com.nvnrdhn.bajps3.room.Favorite
 import com.nvnrdhn.bajps3.room.FavoriteDao
-import java.lang.Exception
 import javax.inject.Inject
 
-open class MainRepository @Inject constructor(
+class MainRepository @Inject constructor(
     private val apiService: TMDBApiService,
     private val favoriteDao: FavoriteDao) {
 

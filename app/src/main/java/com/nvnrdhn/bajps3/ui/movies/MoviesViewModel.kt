@@ -12,7 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-open class MoviesViewModel @Inject constructor(private val repo: MainRepository) : ViewModel() {
+class MoviesViewModel @Inject constructor(private val repo: MainRepository) : ViewModel() {
 
     fun streamMovieList(): LiveData<PagingData<MovieListItem>> = repo.fetchMovieList().cachedIn(viewModelScope)
 
