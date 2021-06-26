@@ -8,15 +8,19 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nvnrdhn.bajps3.R
 import com.nvnrdhn.bajps3.databinding.FragmentFavoriteListBinding
 import com.nvnrdhn.bajps3.ui.adapter.FavoriteListAdapter
+import com.nvnrdhn.bajps3.ui.adapter.FilmLoadStateAdapter
 import com.nvnrdhn.bajps3.ui.details.DetailsActivity
 import com.nvnrdhn.bajps3.util.OnFilmClickListener
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class FavTvShowsFragment : Fragment(), OnFilmClickListener {
@@ -31,30 +35,25 @@ class FavTvShowsFragment : Fragment(), OnFilmClickListener {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentFavoriteListBinding.inflate(layoutInflater, container, false)
+        binding.rvList.apply {
+            adapter = tvAdapter.apply {
+                onFilmClickListener = this@FavTvShowsFragment
+                addLoadStateListener { loadState ->
+                    binding.rvList.isVisible = loadState.source.refresh is LoadState.NotLoading
+                    binding.pbLoading.isVisible = loadState.source.refresh is LoadState.Loading
+                }
+            }.withLoadStateFooter(FilmLoadStateAdapter { tvAdapter.retry() })
+            layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+        }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.rvList.apply {
-            adapter = tvAdapter.apply {
-                onFilmClickListener = this@FavTvShowsFragment
+        viewModel.streamFavoriteTv().observe(viewLifecycleOwner) {
+            lifecycleScope.launch {
+                tvAdapter.submitData(it)
             }
-            layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
-        }
-        viewModel.getFavoriteTvShows().observe(viewLifecycleOwner) {
-            if (it.isNotEmpty()) {
-                binding.rvList.isVisible = true
-                binding.tvEmpty.isVisible = false
-                tvAdapter.setData(it)
-            }
-            else {
-                binding.rvList.isVisible = false
-                binding.tvEmpty.isVisible = true
-            }
-        }
-        viewModel.isLoading().observe(viewLifecycleOwner) {
-            binding.pbLoading.isVisible = it
         }
     }
 

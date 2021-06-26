@@ -45,7 +45,7 @@ class FavTvShowsFragmentTest {
     fun checkFavorite_click() {
         Espresso.onView(ViewMatchers.withId(R.id.rvList))
             .perform(
-                RecyclerViewActions.actionOnItemAtPosition<FavoriteListAdapter.FavoriteListViewHolder>(
+                RecyclerViewActions.actionOnItemAtPosition<FavoriteListAdapter.ViewHolder>(
                     0,
                     ViewActions.click()
                 ))

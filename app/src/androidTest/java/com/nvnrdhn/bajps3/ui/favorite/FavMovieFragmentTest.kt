@@ -45,7 +45,7 @@ class FavMovieFragmentTest {
     fun checkFavorite_click() {
         onView(ViewMatchers.withId(R.id.rvList))
             .perform(
-                RecyclerViewActions.actionOnItemAtPosition<FavoriteListAdapter.FavoriteListViewHolder>(
+                RecyclerViewActions.actionOnItemAtPosition<FavoriteListAdapter.ViewHolder>(
                     0,
                     ViewActions.click()
                 ))

@@ -1,19 +1,16 @@
 package com.nvnrdhn.bajps3.ui.favorite
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.Observer
-import com.nhaarman.mockitokotlin2.verify
+import androidx.paging.PagingSource
+import androidx.paging.PagingState
 import com.nhaarman.mockitokotlin2.whenever
 import com.nvnrdhn.bajps3.data.MainRepository
 import com.nvnrdhn.bajps3.data.TMDBApiService
 import com.nvnrdhn.bajps3.room.Favorite
 import com.nvnrdhn.bajps3.room.FavoriteDao
 import kotlinx.coroutines.runBlocking
-import org.junit.After
+import org.junit.*
 import org.junit.Assert.assertNotNull
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito
@@ -39,9 +36,6 @@ class FavoriteViewModelTest {
     @Mock
     private lateinit var favoriteDao: FavoriteDao
 
-    @Mock
-    private lateinit var favoriteListObserver: Observer<List<Favorite>>
-
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this)
@@ -55,33 +49,59 @@ class FavoriteViewModelTest {
     }
 
     @Test
-    fun getFavoriteMovies() {
+    fun streamFavoriteMovie() {
         runBlocking {
-            whenever(favoriteDao.getAllMovies()).thenReturn(dummyFavoriteList())
-            val res = viewModel.getFavoriteMovies()
-            verify(favoriteDao).getAllMovies()
+            whenever(favoriteDao.streamFavoriteMovies()).thenReturn(dummyPagingSource())
+            val res = favoriteDao.streamFavoriteMovies().load(
+                PagingSource.LoadParams.Refresh(
+                    key = null,
+                    loadSize = MainRepository.NETWORK_PAGE_SIZE,
+                    placeholdersEnabled = false
+                )
+            )
             assertNotNull(res)
-            assertNotNull(res.value)
-            res.observeForever(favoriteListObserver)
-            verify(favoriteListObserver).onChanged(dummyFavoriteList())
+            Assert.assertEquals(
+                PagingSource.LoadResult.Page(
+                    data = dummyFavoriteList(),
+                    prevKey = null,
+                    nextKey = null
+                ),
+                res
+            )
         }
     }
 
     @Test
-    fun getFavoriteTvShows() {
+    fun streamFavoriteTv() {
         runBlocking {
-            whenever(favoriteDao.getAllTvShows()).thenReturn(dummyFavoriteList())
-            val res = viewModel.getFavoriteTvShows()
-            verify(favoriteDao).getAllTvShows()
+            whenever(favoriteDao.streamFavoriteMovies()).thenReturn(dummyPagingSource())
+            val res = favoriteDao.streamFavoriteMovies().load(
+                PagingSource.LoadParams.Refresh(
+                    key = null,
+                    loadSize = MainRepository.NETWORK_PAGE_SIZE,
+                    placeholdersEnabled = false
+                )
+            )
             assertNotNull(res)
-            assertNotNull(res.value)
-            res.observeForever(favoriteListObserver)
-            verify(favoriteListObserver).onChanged(dummyFavoriteList())
+            Assert.assertEquals(
+                PagingSource.LoadResult.Page(
+                    data = dummyFavoriteList(),
+                    prevKey = null,
+                    nextKey = null
+                ),
+                res
+            )
         }
     }
+    fun dummyFavoriteList() = listOf(Favorite(550, 1, "", "", "", ""))
+    fun dummyPagingSource() = object : PagingSource<Int, Favorite>() {
+        override fun getRefreshKey(state: PagingState<Int, Favorite>): Int = 1
 
-    private fun dummyFavoriteList() = listOf(
-        Favorite(1, 1, "", "Movie", "", ""),
-        Favorite(2, 2, "", "Movie", "", "")
-    )
+        override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Favorite> =
+            LoadResult.Page(
+                data = dummyFavoriteList(),
+                prevKey = null,
+                nextKey = null
+            )
+    }
 }

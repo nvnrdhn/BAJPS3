@@ -63,23 +63,21 @@ class MainRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchFavoriteMovie(): List<Favorite>? {
-        return try {
-            favoriteDao.getAllMovies()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
+    fun fetchFavoriteMovie() = Pager(
+        config = PagingConfig(
+            pageSize = NETWORK_PAGE_SIZE,
+            enablePlaceholders = false
+        ),
+        pagingSourceFactory = { favoriteDao.streamFavoriteMovies() }
+    ).liveData
 
-    suspend fun fetchFavoriteTv(): List<Favorite>? {
-        return try {
-            favoriteDao.getAllTvShows()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
+    fun fetchFavoriteTv() = Pager(
+        config = PagingConfig(
+            pageSize = NETWORK_PAGE_SIZE,
+            enablePlaceholders = false
+        ),
+        pagingSourceFactory = { favoriteDao.streamFavoriteTv() }
+    ).liveData
 
     suspend fun checkFavorite(id: Int): Favorite? {
         return try {
