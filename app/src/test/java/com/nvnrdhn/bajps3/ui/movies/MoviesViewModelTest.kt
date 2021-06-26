@@ -1,7 +1,5 @@
 package com.nvnrdhn.bajps3.ui.movies
 
-import androidx.paging.PagingSource.LoadParams.Refresh
-import androidx.paging.PagingSource.LoadResult.Page
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.nvnrdhn.bajps3.BuildConfig
@@ -9,11 +7,9 @@ import com.nvnrdhn.bajps3.data.MainRepository
 import com.nvnrdhn.bajps3.data.MoviePagingSource
 import com.nvnrdhn.bajps3.data.TMDBApiService
 import com.nvnrdhn.bajps3.data.model.ConfigurationResponse
-import com.nvnrdhn.bajps3.data.model.MovieListResponse
 import com.nvnrdhn.bajps3.room.FavoriteDao
 import kotlinx.coroutines.runBlocking
 import org.junit.After
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Rule
@@ -58,22 +54,8 @@ class MoviesViewModelTest {
     @Test
     fun streamMovieList() {
         runBlocking {
-            whenever(apiService.getMovieList(BuildConfig.API_KEY, 1)).thenReturn(dummyMovieListResponse())
-            val res = pagingSource.load(
-                Refresh(
-                    key = null,
-                    loadSize = MainRepository.NETWORK_PAGE_SIZE,
-                    placeholdersEnabled = false)
-            )
-            assertEquals(
-                Page(
-                    data = dummyMovieListResponse().body()!!.results,
-                    prevKey = null,
-                    nextKey = null
-                ),
-                res
-            )
-            verify(apiService).getMovieList(BuildConfig.API_KEY, 1)
+            val res = viewModel.streamMovieList()
+            assertNotNull(res)
         }
     }
 
@@ -88,12 +70,4 @@ class MoviesViewModelTest {
     }
 
     private fun dummyConfigResponse() = Response.success(ConfigurationResponse())
-    private fun dummyMovieListResponse() = Response.success(
-        MovieListResponse(
-            1,
-            1,
-            listOf(),
-            1
-        )
-    )
 }

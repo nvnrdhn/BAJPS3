@@ -1,6 +1,5 @@
 package com.nvnrdhn.bajps3.ui.tvshows
 
-import androidx.paging.PagingSource
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.nvnrdhn.bajps3.BuildConfig
@@ -8,11 +7,9 @@ import com.nvnrdhn.bajps3.data.MainRepository
 import com.nvnrdhn.bajps3.data.TMDBApiService
 import com.nvnrdhn.bajps3.data.TvPagingSource
 import com.nvnrdhn.bajps3.data.model.ConfigurationResponse
-import com.nvnrdhn.bajps3.data.model.TvListResponse
 import com.nvnrdhn.bajps3.room.FavoriteDao
 import kotlinx.coroutines.runBlocking
 import org.junit.After
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Rule
@@ -57,23 +54,8 @@ class TvShowsViewModelTest {
     @Test
     fun streamTvList() {
         runBlocking {
-            whenever(apiService.getTvList(BuildConfig.API_KEY, 1)).thenReturn(dummyTvListResponse())
-            val res = pagingSource.load(
-                PagingSource.LoadParams.Refresh(
-                    key = null,
-                    loadSize = MainRepository.NETWORK_PAGE_SIZE,
-                    placeholdersEnabled = false
-                )
-            )
-            assertEquals(
-                PagingSource.LoadResult.Page(
-                    data = dummyTvListResponse().body()!!.results,
-                    prevKey = null,
-                    nextKey = null
-                ),
-                res
-            )
-            verify(apiService).getTvList(BuildConfig.API_KEY, 1)
+            val res = viewModel.streamTvList()
+            assertNotNull(res)
         }
     }
 
@@ -88,12 +70,4 @@ class TvShowsViewModelTest {
     }
 
     private fun dummyConfigResponse() = Response.success(ConfigurationResponse())
-    private fun dummyTvListResponse() = Response.success(
-        TvListResponse(
-            1,
-            1,
-            listOf(),
-            1
-        )
-    )
 }

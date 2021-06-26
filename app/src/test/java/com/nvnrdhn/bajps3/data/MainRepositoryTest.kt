@@ -1,11 +1,11 @@
 package com.nvnrdhn.bajps3.data
 
-import androidx.paging.PagingSource
-import androidx.paging.PagingState
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.nvnrdhn.bajps3.BuildConfig
-import com.nvnrdhn.bajps3.data.model.*
+import com.nvnrdhn.bajps3.data.model.ConfigurationResponse
+import com.nvnrdhn.bajps3.data.model.MovieDetailResponse
+import com.nvnrdhn.bajps3.data.model.TvDetailResponse
 import com.nvnrdhn.bajps3.room.Favorite
 import com.nvnrdhn.bajps3.room.FavoriteDao
 import kotlinx.coroutines.runBlocking
@@ -56,55 +56,27 @@ class MainRepositoryTest {
     @Test
     fun fetchMovieList() {
         runBlocking {
-            whenever(apiService.getMovieList(BuildConfig.API_KEY, 1)).thenReturn(dummyMovieListResponse())
-            val res = moviePagingSource.load(
-                PagingSource.LoadParams.Refresh(
-                    key = null,
-                    loadSize = MainRepository.NETWORK_PAGE_SIZE,
-                    placeholdersEnabled = false)
-            )
-            assertEquals(
-                PagingSource.LoadResult.Page(
-                    data = dummyMovieListResponse().body()!!.results,
-                    prevKey = null,
-                    nextKey = null
-                ),
-                res
-            )
-            verify(apiService).getMovieList(BuildConfig.API_KEY, 1)
+            val res = mainRepository.fetchMovieList()
+            assertNotNull(res)
         }
     }
 
     @Test
     fun fetchTvList() {
         runBlocking {
-            whenever(apiService.getTvList(BuildConfig.API_KEY, 1)).thenReturn(dummyTvListResponse())
-            val res = tvPagingSource.load(
-                PagingSource.LoadParams.Refresh(
-                    key = null,
-                    loadSize = MainRepository.NETWORK_PAGE_SIZE,
-                    placeholdersEnabled = false
-                )
-            )
-            assertEquals(
-                PagingSource.LoadResult.Page(
-                    data = dummyTvListResponse().body()!!.results,
-                    prevKey = null,
-                    nextKey = null
-                ),
-                res
-            )
-            verify(apiService).getTvList(BuildConfig.API_KEY, 1)
+            val res = mainRepository.fetchTvList()
+            assertNotNull(res)
         }
     }
 
     @Test
     fun fetchConfig() {
         runBlocking {
-            whenever(apiService.getConfig(BuildConfig.API_KEY)).thenReturn(dummyConfigResponse())
+            val dummy = dummyConfigResponse()
+            whenever(apiService.getConfig(BuildConfig.API_KEY)).thenReturn(dummy)
             val res = mainRepository.fetchConfig()
             verify(apiService).getConfig(BuildConfig.API_KEY)
-            assertNotNull(res)
+            assertEquals(dummy.body(), res)
         }
     }
 
@@ -115,7 +87,7 @@ class MainRepositoryTest {
             whenever(apiService.getMovieDetails(550, BuildConfig.API_KEY)).thenReturn(dummy)
             val res = mainRepository.fetchMovieDetails(550)
             verify(apiService).getMovieDetails(550, BuildConfig.API_KEY)
-            assertNotNull(res)
+            assertEquals(dummy.body(), res)
         }
     }
 
@@ -126,53 +98,23 @@ class MainRepositoryTest {
             whenever(apiService.getTvDetails(1399, BuildConfig.API_KEY)).thenReturn(dummy)
             val res = mainRepository.fetchTvDetails(1399)
             verify(apiService).getTvDetails(1399, BuildConfig.API_KEY)
-            assertNotNull(res)
+            assertEquals(dummy.body(), res)
         }
     }
 
     @Test
     fun fetchFavoriteMovie() {
         runBlocking {
-            whenever(favoriteDao.streamFavoriteMovies()).thenReturn(dummyPagingSource())
-            val res = favoriteDao.streamFavoriteMovies().load(
-                PagingSource.LoadParams.Refresh(
-                    key = null,
-                    loadSize = MainRepository.NETWORK_PAGE_SIZE,
-                    placeholdersEnabled = false
-                )
-            )
+            val res = mainRepository.fetchFavoriteMovie()
             assertNotNull(res)
-            assertEquals(
-                PagingSource.LoadResult.Page(
-                    data = dummyFavoriteList(),
-                    prevKey = null,
-                    nextKey = null
-                ),
-                res
-            )
         }
     }
 
     @Test
     fun fetchFavoriteTv() {
         runBlocking {
-            whenever(favoriteDao.streamFavoriteTv()).thenReturn(dummyPagingSource())
-            val res = favoriteDao.streamFavoriteTv().load(
-                PagingSource.LoadParams.Refresh(
-                    key = null,
-                    loadSize = MainRepository.NETWORK_PAGE_SIZE,
-                    placeholdersEnabled = false
-                )
-            )
+            val res = mainRepository.fetchFavoriteTv()
             assertNotNull(res)
-            assertEquals(
-                PagingSource.LoadResult.Page(
-                    data = dummyFavoriteList(),
-                    prevKey = null,
-                    nextKey = null
-                ),
-                res
-            )
         }
     }
 
@@ -183,7 +125,7 @@ class MainRepositoryTest {
             whenever(favoriteDao.findFavoriteById(550)).thenReturn(dummy)
             val res = mainRepository.checkFavorite(550)
             verify(favoriteDao).findFavoriteById(550)
-            assertNotNull(res)
+            assertEquals(dummy[0], res)
         }
     }
 
@@ -210,34 +152,8 @@ class MainRepositoryTest {
     }
 
     private fun dummyConfigResponse() = Response.success(ConfigurationResponse())
-    private fun dummyMovieListResponse() = Response.success(
-        MovieListResponse(
-            1,
-            1,
-            listOf(),
-            1
-        )
-    )
-    private fun dummyTvListResponse() = Response.success(
-        TvListResponse(
-            1,
-            1,
-            listOf(),
-            1
-        )
-    )
-    fun dummyMovieDetailResponse() = Response.success(mock(MovieDetailResponse::class.java))
-    fun dummyTvDetailResponse() = Response.success(mock(TvDetailResponse::class.java))
-    fun dummyFavorite() = Favorite(550, 1, "", "", "", "")
-    fun dummyFavoriteList() = listOf(dummyFavorite())
-    fun dummyPagingSource() = object : PagingSource<Int, Favorite>() {
-        override fun getRefreshKey(state: PagingState<Int, Favorite>): Int = 1
-
-        override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Favorite> =
-            LoadResult.Page(
-                data = dummyFavoriteList(),
-                prevKey = null,
-                nextKey = null
-            )
-    }
+    private fun dummyMovieDetailResponse() = Response.success(mock(MovieDetailResponse::class.java))
+    private fun dummyTvDetailResponse() = Response.success(mock(TvDetailResponse::class.java))
+    private fun dummyFavorite() = Favorite(550, 1, "", "", "", "")
+    private fun dummyFavoriteList() = listOf(dummyFavorite())
 }
