@@ -25,7 +25,7 @@ class DetailsActivityTest {
 
 
     private val intent = Intent(ApplicationProvider.getApplicationContext(), DetailsActivity::class.java)
-        .putExtra("id", 550)
+        .putExtra("id", 297761)
         .putExtra("type", DetailsActivity.TYPE_MOVIE)
 
     @get:Rule
