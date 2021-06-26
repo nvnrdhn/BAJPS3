@@ -39,8 +39,9 @@ class FavMovieFragment : Fragment(), OnFilmClickListener {
             adapter = movieAdapter.apply {
                 onFilmClickListener = this@FavMovieFragment
                 addLoadStateListener { loadState ->
-                    binding.rvList.isVisible = loadState.source.refresh is LoadState.NotLoading
+                    binding.rvList.isVisible = (loadState.source.refresh is LoadState.NotLoading && movieAdapter.itemCount != 0)
                     binding.pbLoading.isVisible = loadState.source.refresh is LoadState.Loading
+                    binding.tvEmpty.isVisible = movieAdapter.itemCount == 0
                 }
             }.withLoadStateFooter(FilmLoadStateAdapter { movieAdapter.retry() })
             layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
