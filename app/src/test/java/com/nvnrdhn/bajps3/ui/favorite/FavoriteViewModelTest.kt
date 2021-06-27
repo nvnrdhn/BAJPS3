@@ -1,15 +1,15 @@
 package com.nvnrdhn.bajps3.ui.favorite
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.paging.PagingSource
+import androidx.paging.PagingState
 import com.nvnrdhn.bajps3.data.MainRepository
 import com.nvnrdhn.bajps3.data.TMDBApiService
+import com.nvnrdhn.bajps3.room.Favorite
 import com.nvnrdhn.bajps3.room.FavoriteDao
 import kotlinx.coroutines.runBlocking
-import org.junit.After
+import org.junit.*
 import org.junit.Assert.assertNotNull
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito
@@ -35,10 +35,15 @@ class FavoriteViewModelTest {
     @Mock
     private lateinit var favoriteDao: FavoriteDao
 
+    private lateinit var favMoviePagingSource: PagingSource<Int, Favorite>
+    private lateinit var favTvPagingSource: PagingSource<Int, Favorite>
+
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this)
         mainRepository = MainRepository(apiService, favoriteDao)
+        favMoviePagingSource = dummyPagingSource()
+        favTvPagingSource = dummyPagingSource()
         viewModel = FavoriteViewModel(mainRepository)
     }
 
@@ -50,16 +55,57 @@ class FavoriteViewModelTest {
     @Test
     fun streamFavoriteMovie() {
         runBlocking {
-            val res = viewModel.streamFavoriteMovie()
+            val res = favMoviePagingSource.load(
+                PagingSource.LoadParams.Refresh(
+                    key = null,
+                    loadSize = MainRepository.NETWORK_PAGE_SIZE,
+                    placeholdersEnabled = false
+                )
+            )
             assertNotNull(res)
+            Assert.assertEquals(
+                PagingSource.LoadResult.Page(
+                    data = dummyFavoriteList(),
+                    prevKey = null,
+                    nextKey = null
+                ),
+                res
+            )
         }
     }
 
     @Test
     fun streamFavoriteTv() {
         runBlocking {
-            val res = viewModel.streamFavoriteTv()
+            val res = favTvPagingSource.load(
+                PagingSource.LoadParams.Refresh(
+                    key = null,
+                    loadSize = MainRepository.NETWORK_PAGE_SIZE,
+                    placeholdersEnabled = false
+                )
+            )
             assertNotNull(res)
+            Assert.assertEquals(
+                PagingSource.LoadResult.Page(
+                    data = dummyFavoriteList(),
+                    prevKey = null,
+                    nextKey = null
+                ),
+                res
+            )
         }
+    }
+
+    private fun dummyFavorite() = Favorite(550, 1, "", "", "", "")
+    private fun dummyFavoriteList() = listOf(dummyFavorite())
+    fun dummyPagingSource() = object : PagingSource<Int, Favorite>() {
+        override fun getRefreshKey(state: PagingState<Int, Favorite>): Int = 1
+
+        override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Favorite> =
+            LoadResult.Page(
+                data = dummyFavoriteList(),
+                prevKey = null,
+                nextKey = null
+            )
     }
 }

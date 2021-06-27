@@ -1,11 +1,11 @@
 package com.nvnrdhn.bajps3.data
 
+import androidx.paging.PagingSource
+import androidx.paging.PagingState
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.nvnrdhn.bajps3.BuildConfig
-import com.nvnrdhn.bajps3.data.model.ConfigurationResponse
-import com.nvnrdhn.bajps3.data.model.MovieDetailResponse
-import com.nvnrdhn.bajps3.data.model.TvDetailResponse
+import com.nvnrdhn.bajps3.data.model.*
 import com.nvnrdhn.bajps3.room.Favorite
 import com.nvnrdhn.bajps3.room.FavoriteDao
 import kotlinx.coroutines.runBlocking
@@ -39,12 +39,16 @@ class MainRepositoryTest {
     private lateinit var mainRepository: MainRepository
     private lateinit var moviePagingSource: MoviePagingSource
     private lateinit var tvPagingSource: TvPagingSource
+    private lateinit var favMoviePagingSource: PagingSource<Int, Favorite>
+    private lateinit var favTvPagingSource: PagingSource<Int, Favorite>
 
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this)
         moviePagingSource = MoviePagingSource(apiService)
         tvPagingSource = TvPagingSource(apiService)
+        favMoviePagingSource = dummyPagingSource()
+        favTvPagingSource = dummyPagingSource()
         mainRepository = MainRepository(apiService, favoriteDao)
     }
 
@@ -56,16 +60,42 @@ class MainRepositoryTest {
     @Test
     fun fetchMovieList() {
         runBlocking {
-            val res = mainRepository.fetchMovieList()
-            assertNotNull(res)
+            whenever(apiService.getMovieList(BuildConfig.API_KEY, 1)).thenReturn(dummyMovieListResponse())
+            val res = moviePagingSource.load(
+                PagingSource.LoadParams.Refresh(
+                    key = null,
+                    loadSize = MainRepository.NETWORK_PAGE_SIZE,
+                    placeholdersEnabled = false)
+            )
+            assertEquals(
+                PagingSource.LoadResult.Page(
+                    data = dummyMovieListResponse().body()!!.results,
+                    prevKey = null,
+                    nextKey = null
+                ),
+                res
+            )
         }
     }
 
     @Test
     fun fetchTvList() {
         runBlocking {
-            val res = mainRepository.fetchTvList()
-            assertNotNull(res)
+            whenever(apiService.getTvList(BuildConfig.API_KEY, 1)).thenReturn(dummyTvListResponse())
+            val res = tvPagingSource.load(
+                PagingSource.LoadParams.Refresh(
+                    key = null,
+                    loadSize = MainRepository.NETWORK_PAGE_SIZE,
+                    placeholdersEnabled = false)
+            )
+            assertEquals(
+                PagingSource.LoadResult.Page(
+                    data = dummyTvListResponse().body()!!.results,
+                    prevKey = null,
+                    nextKey = null
+                ),
+                res
+            )
         }
     }
 
@@ -105,16 +135,44 @@ class MainRepositoryTest {
     @Test
     fun fetchFavoriteMovie() {
         runBlocking {
-            val res = mainRepository.fetchFavoriteMovie()
+            val res = favMoviePagingSource.load(
+                PagingSource.LoadParams.Refresh(
+                    key = null,
+                    loadSize = MainRepository.NETWORK_PAGE_SIZE,
+                    placeholdersEnabled = false
+                )
+            )
             assertNotNull(res)
+            assertEquals(
+                PagingSource.LoadResult.Page(
+                    data = dummyFavoriteList(),
+                    prevKey = null,
+                    nextKey = null
+                ),
+                res
+            )
         }
     }
 
     @Test
     fun fetchFavoriteTv() {
         runBlocking {
-            val res = mainRepository.fetchFavoriteTv()
+            val res = favTvPagingSource.load(
+                PagingSource.LoadParams.Refresh(
+                    key = null,
+                    loadSize = MainRepository.NETWORK_PAGE_SIZE,
+                    placeholdersEnabled = false
+                )
+            )
             assertNotNull(res)
+            assertEquals(
+                PagingSource.LoadResult.Page(
+                    data = dummyFavoriteList(),
+                    prevKey = null,
+                    nextKey = null
+                ),
+                res
+            )
         }
     }
 
@@ -156,4 +214,30 @@ class MainRepositoryTest {
     private fun dummyTvDetailResponse() = Response.success(mock(TvDetailResponse::class.java))
     private fun dummyFavorite() = Favorite(550, 1, "", "", "", "")
     private fun dummyFavoriteList() = listOf(dummyFavorite())
+    fun dummyPagingSource() = object : PagingSource<Int, Favorite>() {
+        override fun getRefreshKey(state: PagingState<Int, Favorite>): Int = 1
+
+        override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Favorite> =
+            LoadResult.Page(
+                data = dummyFavoriteList(),
+                prevKey = null,
+                nextKey = null
+            )
+    }
+    private fun dummyMovieListResponse() = Response.success(
+        MovieListResponse(
+            1,
+            1,
+            listOf(),
+            1
+        )
+    )
+    private fun dummyTvListResponse() = Response.success(
+        TvListResponse(
+            1,
+            1,
+            listOf(),
+            1
+        )
+    )
 }

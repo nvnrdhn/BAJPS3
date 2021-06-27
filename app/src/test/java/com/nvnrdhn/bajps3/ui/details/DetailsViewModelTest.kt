@@ -14,7 +14,7 @@ import com.nvnrdhn.bajps3.room.Favorite
 import com.nvnrdhn.bajps3.room.FavoriteDao
 import kotlinx.coroutines.runBlocking
 import org.junit.After
-import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -73,8 +73,7 @@ class DetailsViewModelTest {
             whenever(apiService.getMovieDetails(550, BuildConfig.API_KEY)).thenReturn(dummy)
             val res = viewModel.fetchMovieDetails(550)
             verify(apiService).getMovieDetails(550, BuildConfig.API_KEY)
-            assertNotNull(res)
-            assertNotNull(res.value)
+            assertEquals(dummy.body(), res.value)
             res.observeForever(movieDetailObserver)
             verify(movieDetailObserver).onChanged(dummy.body())
         }
@@ -87,8 +86,7 @@ class DetailsViewModelTest {
             whenever(apiService.getTvDetails(1399, BuildConfig.API_KEY)).thenReturn(dummy)
             val res = viewModel.fetchTvDetails(1399)
             verify(apiService).getTvDetails(1399, BuildConfig.API_KEY)
-            assertNotNull(res)
-            assertNotNull(res.value)
+            assertEquals(dummy.body(), res.value)
             res.observeForever(tvDetailObserver)
             verify(tvDetailObserver).onChanged(dummy.body())
         }
@@ -97,10 +95,12 @@ class DetailsViewModelTest {
     @Test
     fun fetchConfig() {
         runBlocking {
-            whenever(apiService.getConfig(BuildConfig.API_KEY)).thenReturn(dummyConfigResponse())
-            val res = viewModel.fetchConfig()
+            val dummy = dummyConfigResponse()
+            whenever(apiService.getConfig(BuildConfig.API_KEY)).thenReturn(dummy)
+            viewModel.fetchConfig()
+            val res = viewModel.config
             verify(apiService).getConfig(BuildConfig.API_KEY)
-            assertNotNull(res)
+            assertEquals(dummy.body(), res)
         }
     }
 
@@ -111,8 +111,7 @@ class DetailsViewModelTest {
             whenever(favoriteDao.findFavoriteById(550)).thenReturn(dummy)
             val res = viewModel.checkFavorite(550)
             verify(favoriteDao).findFavoriteById(550)
-            assertNotNull(res)
-            assertNotNull(res.value)
+            assertEquals(dummy[0], res.value)
             res.observeForever(favoriteObserver)
             verify(favoriteObserver).onChanged(dummy[0])
         }
